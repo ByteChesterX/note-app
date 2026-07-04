@@ -1,0 +1,49 @@
+name: Build & Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Sürüm etiketi (örn. v1.0.0)"
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Derle ve Yayınla
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kodu çek
+        uses: actions/checkout@v4
+
+      - name: Rust kur
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Sistem bağımlılıklarını yükle
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libx11-dev \
+            libxi-dev \
+            libgl1-mesa-dev \
+            libasound2-dev \
+            libudev-dev \
+            libxcb-render0-dev \
+            libxcb-shape0-dev \
+            libxcb-xfixes0-dev \
+            libxkbcommon-dev \
+            pkg-config
+
+      - name: Derle
+        run: cargo build --release
+
+      - name: Release oluştur
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.version }}
+          name: ${{ inputs.version }}
+          files: target/release/note-app
+          draft: false
+          prerelease: false
+          generate_release_notes: true
