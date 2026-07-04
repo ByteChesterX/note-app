@@ -8,6 +8,9 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: write  # ⭐ Release oluşturmak için GEREKLİ
+
 jobs:
   build:
     name: Derle ve Yayınla
